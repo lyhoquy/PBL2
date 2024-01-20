@@ -1,0 +1,3 @@
+VIP001,Van Ba Pham Tan,1990, Nam , 1234567890, 01, 01, 2023, 1,Ho boi vo cuc
+VIP002,Ho Quy Ly,1990, Nu  , 0123456789, 25, 02, 2023, 6,Do uong tu chon
+VIP003,e,2004, Nam , 1234509876, 29, 12, 2023 , 8,Do uong tu chon

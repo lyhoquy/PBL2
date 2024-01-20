@@ -1,0 +1,850 @@
+#ifndef HUMAN_H
+#define HUMAN_H
+
+#include <iostream>
+#include <iomanip>
+#include <conio.h> // de dung cau lenh input = getch() trong ham chon gioi tinh dung phim len xuong voi Enter
+
+class Human{
+protected:
+    std::string FullName;
+    std::string BornYear;
+    std::string Gender;
+    std::string PhoneNumber;
+
+public:
+    // ham dung ni de kiem tra cai bangr thong tin in ra co dung khong thoi 
+    Human(std::string = "", std::string = "", std::string = "", std::string = "");
+    void Show();
+    std::string ChooseGender();
+
+    std::string GetName(){
+        return this->FullName;
+    }
+
+    std::string GetYear(){
+        return this->BornYear;
+    }
+
+    std::string GetGender(){
+        return this->Gender;
+    }
+
+    std::string GetPhoneNumber(){
+        return this->PhoneNumber;
+    }
+
+    void Input(const std::string&);
+};
+
+#endif     
+
+#include "Human.h"
+
+Human::Human(std::string fullname, std::string bornyear, std::string gender, std::string phonenumber)
+    : FullName(fullname), BornYear(bornyear), Gender(gender), PhoneNumber(phonenumber)
+{}
+
+void Human::Show(){
+    std::cout << "|" << std::setw(17) << "Ten khach hang : "<<this->FullName << std::setw(28-this->FullName.length()) <<"|" << std::endl;
+    std::cout << "|" << std::setw(17) << "Nam sinh : " << this->BornYear << std::setw(24) <<"|" << std::endl;
+    std::cout << "|" << std::setw(17) << "Gioi tinh : " << this->Gender << std::setw(24) << "|" << std::endl;
+    std::cout << "|" << std::setw(17) << "So dien thoai : " << this->PhoneNumber << std::setw(18) <<"|" << std::endl;
+}
+
+std::string Human::ChooseGender(){
+    int input;
+    int choose = 1;
+    int maxchoose = 3;
+
+    do
+    {
+        system("cls");
+        std::cout <<"Chon gioi tinh: \n";
+        std::cout << (choose == 1 ? '>' : ' ') << " Nam  \n";
+        std::cout << (choose == 2 ? '>' : ' ') << " Nu   \n";
+        std::cout << (choose == 3 ? '>' : ' ') << " Khac \n";
+
+        input = getch();
+        if (input == 80) { // Mũi tên đi xuống (lên)
+            if (choose == maxchoose) {
+                choose = 1; // Di chuyển lên đầu danh sách
+            } else {
+                choose++;
+            }
+        } else if (input == 72) { // Mũi tên lên (xuống)
+            if (choose == 1) {
+                choose = maxchoose; // Di chuyển xuống cuối danh sách
+            } else {
+                choose--;
+            }
+        }
+
+    }while (input != 13); 
+
+        switch (choose)
+        {
+        case 1:
+            return "Nam ";
+            break;
+        case 2:
+            return "Nu  ";
+            break;
+        case 3:
+            return "Khac";
+            break;
+        }
+}
+
+void Human::Input(const std::string& s){
+    std::cin.ignore();
+    std::cout << "Nhap ten khach hang: " << std::endl;
+    getline(std::cin, this->FullName);
+    this->Gender = this->ChooseGender();
+
+
+    std::cout << "Nhap nam sinh (4 chu so): ";
+    std::cin >> this->BornYear;
+
+    this->PhoneNumber = s;
+}
+
+#ifndef CUSTUMERTYPE1_H
+#define CUSTUMERTYPE1_H
+
+#include <iostream>
+#include <fstream> // thu vien lam viec voi file
+
+#include "Package1.h"
+#include "Human.h"
+
+class CustumerType1 : public Human
+{
+protected:
+    Package1 p1;
+private:
+    std::vector<std::string> History;
+
+public:
+    static std::string NameCustumerType1;
+    static int Count1;
+    virtual void ReadFile(std::ifstream&);
+    virtual void WriteFile(const std::string&);
+    virtual void Show();
+    virtual void Update();
+    // friend std::istream& operator >> (std::istream&,CustumerType1&);
+
+    void InputTrainDay();
+    void them(const std::string s){
+        this->History.push_back(s);
+    }
+    
+    void Input(const std::string&);
+
+    int TotalPrice(){
+        return this->p1.PriceEachDay;
+    }
+};
+
+#endif
+
+#include "CustumerType1.h"
+#include "Exp.h"
+#include <stdexcept>
+#include <string>
+// #include <limits>
+
+std::string CustumerType1::NameCustumerType1 = "Khach hang tap theo ngay";
+int CustumerType1::Count1 = 1;
+
+// void CustumerType1::ReadFile(std::ifstream& ifs){
+
+//     getline(ifs, FullName,',');
+
+//     getline(ifs,BornYear,',');
+//     ifs.ignore(1, ',');
+    
+//     getline(ifs,Gender,',');
+//     ifs.ignore(1, ',');
+
+//     getline(ifs,PhoneNumber,',');
+//     ifs.ignore(1, ',');
+
+//     std::string s ;
+//     // // ifs >> s;
+//     History.clear();
+
+//     while (getline(ifs, s, ',')) {
+//         if (s.find('-') != std::string::npos) {
+//             s.erase(s.find('-'));
+//             History.push_back(s);
+//             break;
+//         }
+//         History.push_back(s);
+//     }
+//     ifs.ignore(1, '\n');
+
+// }
+
+void CustumerType1::ReadFile(std::ifstream& ifs) {
+    std::string line;
+    if (std::getline(ifs, line)) {
+        std::istringstream iss(line);
+        getline(iss, FullName, ',');
+        getline(iss, BornYear, ',');
+        ifs.ignore(1, ',');
+        getline(iss, Gender, ',');
+        ifs.ignore(1, ',');
+        getline(iss, PhoneNumber, ',');
+        ifs.ignore(1, ',');
+
+        std::string s;
+        History.clear();
+
+        while (getline(iss, s, ',')) {
+            if (s.find('-') != std::string::npos) {
+                s.erase(s.find('-'));
+                History.push_back(s);
+                break;
+            }
+            History.push_back(s);
+        }
+    }
+}
+
+
+void CustumerType1::WriteFile(const std::string& filename){
+    // std::ofstream ofs;
+    // ofs.open("danhsachkhachhang.txt", std::ios::app);
+    // if (!ofs) {
+    //     std::cout << "Khong the mo file." << std::endl;
+    //     return;
+    // }
+
+    std::ofstream ofs(filename,std::ios::app);
+    if(!ofs) {
+        std::cerr<<"Can't open output file.\n";
+        return;
+    }
+    if(Count1 == 1){
+        Count1 = 0;
+    }
+    else{
+        ofs << std::endl << "   ";
+    }
+
+    ofs << FullName << "," << BornYear << "," << Gender << "," << PhoneNumber << ",";
+    for(int i=0; i<History.size()-1; ++i){
+        ofs << History[i] << ", ";
+    }
+    ofs << History[History.size()-1] << "-";
+
+    ofs.close();
+}
+
+
+void CustumerType1::Show(){
+    std::cout << "----------------------------------------------" << std::endl;
+    Human::Show();
+    // std::cout << "|" << std::setw(17) << "Ngay tap : " << ((p1.GetDay().length()==1) ? ("0"+p1.GetDay()) : p1.GetDay()) 
+    //           << "/" << ((p1.GetMonth().length()==1) ? ("0"+p1.GetMonth()) : p1.GetMonth()) << "/" << p1.GetYear()
+    //           << std::setw(18) << "|" << std::endl;
+    // int i =0;
+    std::cout << "|" << std::setw(17) << "Nhung ngay tap : " << this->History[0] << std::setw(18) << "|" << std::endl;
+    for(int i=1; i<this->History.size(); ++i){
+        std::cout << "|" << std::setw(27) << this->History[i] << std::setw(18) << "|" << std::endl;
+    }
+    // std::cout << "|" << std::setw(17) << "Don gia : " << p1.PriceEachDay << " 000VND" << std::setw(21-p1.PriceEachDay.length()) << "|" << std::endl;
+    std::cout << "----------------------------------------------" << std::endl;
+
+    // if(this->History.size() == 1) return;
+    // for(int i=0; i<this->History.size(); ++i){
+    //     std::cout << (i+1) << ". " << History[i] << "\n";
+    // }
+}
+
+void CustumerType1::Update(){
+    int temp = 1;
+    int input;
+    int choice = 1;
+    int MaxChoice = 5;
+    do{
+        system("cls");
+        std::cout<<"Chon dich vu muon cap nhat:"<<std::endl;
+            std::cout << (choice == 1 ? ">":" ") << "Ten khach hang hien tai: " << this->GetName() << std::endl;
+            std::cout << (choice == 2 ? ">":" ") << "Nam sinh khach hang hien tai: " << this->GetYear() << std::endl;
+            std::cout << (choice == 3 ? ">":" ") << "Gioi tinh khach hang hien tai: " << this->GetGender() << std::endl;
+            std::cout << (choice == 4 ? ">":" ") << "So dien thoai khach hang hien tai: " << this->GetPhoneNumber() << std::endl;
+            std::cout << (choice == 5 ? ">":" ") << "Thoat" << std::endl;
+
+            input = getch();
+
+            if (input == 80) { // Mũi tên đi xuống (lên)
+            if (choice == MaxChoice) {
+                choice = 1; // Di chuyển lên đầu danh sách
+            } else {
+                choice++;
+            }
+        } else if (input == 72) { // Mũi tên lên (xuống)
+            if (choice == 1) {
+                choice = MaxChoice; // Di chuyển xuống cuối danh sách
+            } else {
+                choice--;
+            }
+        }
+
+        if(input == 13){
+            switch (choice){
+                case 1:
+                    if(temp == 1){
+                        std::cin.ignore();
+                        temp = 0;
+                    } 
+                    std::cout << "Cap nhat ten : " << std::endl;
+                    getline(std::cin,this->FullName);
+                    temp = 0;
+                    
+                    
+                    
+                    // this->FullName = "";
+                    // char c;
+                    // while ((c = std::cin.get()) != '\n')
+                    // {
+                    //     this->FullName += c;
+                    // }
+                    
+                    // std::cout << "Da cap nhat lai ten day du cua khach hang" << std::endl;
+                    break;
+                case 2:
+                    std::cout << "Cap nhat nam sinh : ";
+                    std::cin >> this->BornYear;
+                    // std::cout << "Da cap nhat lai nam sinh cua khach hang" << std::endl;
+                    break;
+
+                case 3:
+                    std::cout << "Cap nhat lai gioi tinh : ";
+                    this->Gender = Human::ChooseGender();
+                    // std::cout << "Da cap nhat lai gioi tinh cua khach hang " << std::endl;
+                    break;
+                case 4:
+                    std::cout << "Nhap so dien thoai moi : ";
+                    std::cin >> this->PhoneNumber;
+                    // std::cout << "Da cap nhat lai so dien thoai cua khach hang" << std::endl;
+                    break;
+                case 5:
+                    // system("pause");
+                    std::cout << "Da thoat khoi muc chinh sua thong tin" << std::endl;
+                    return;
+                    break;
+            }
+        }
+    }while (input != '0');
+}
+
+// std::istream& operator>>(std::istream& in, CustumerType1& ct1) {
+//     // Exp check;
+//     std::cin.ignore();
+//     std::cout << "Nhap ten khach hang: ";
+//     getline(in, ct1.FullName);
+
+//     ct1.Gender = ct1.ChooseGender();
+
+//     // std::cout << "Nhap so dien thoai : ";
+//     // in >> ct1.PhoneNumber;
+//     // // check.Check(ct1.PhoneNumber, 10);
+    
+
+//     std::cout << "Nhap nam sinh (4 chu so): ";
+//     in >> ct1.BornYear;
+//     // // check.Check(ct1.BornYear, 4);
+
+//     std::cout << "Nam hien tai la 2023" << std::endl;
+
+//     std::string day;
+//     std::cout << "Nhap ngay tap: ";
+//     in >> day;
+//     // check.validateNumeric(day);
+//     ct1.p1.SetDay(day);
+
+//     std::string month;
+//     std::cout << "Nhap thang bat dau tap: ";
+//     in >> month;
+//     // check.validateNumeric(month);
+//     ct1.p1.SetMonth(month);
+
+//     return in;
+// }
+
+void CustumerType1::InputTrainDay(){
+    std::string day;
+    std::cout << "Nam hien tai la 2023" << std::endl;
+    std::cout << "Nhap ngay tap: ";
+    std::cin >> day;
+    // check.validateNumeric(day);
+    this->p1.SetDay(day);
+
+    std::string month;
+    std::cout << "Nhap thang bat dau tap: ";
+    std::cin >> month;
+    // check.validateNumeric(month);
+    this->p1.SetMonth(month);
+
+    std::string s = day + "/" + month + "/" + p1.Year;
+    this->History.push_back(s);
+    // this->add(s);
+}
+
+void CustumerType1::Input(const std::string& s){
+    std::cin.ignore();
+    std::cout << "Nhap ten khach hang: " << std::endl;
+    getline(std::cin, this->FullName);
+    this->Gender = this->ChooseGender();
+
+
+    std::cout << "Nhap nam sinh (4 chu so): ";
+    std::cin >> this->BornYear;
+
+    this->PhoneNumber = s;
+
+    this->InputTrainDay();
+}
+
+#ifndef CUSTUMERTYPE2_H
+#define CUSTUMERTYPE2_H
+
+#include "CustumerType1.h"
+#include "Package2.h"
+
+class CustumerType2 : public CustumerType1
+{
+protected:
+    std::string CustumerNumber;
+    Package2 p2;
+    
+public:
+    static std::string NameCustumerType2;
+    static int Count2; // dem so luong khach loai 2 dung so luong ni de lam ma kh vd count2 = 1 -> ma la N001
+
+    std::string GetCustumerNumer(){
+        return this->CustumerNumber;
+    }
+
+    void SetCustumerNumber(std::string& custumernumber){
+        this->CustumerNumber = custumernumber;
+    }
+
+    std::string GetName2(){
+        return this->FullName;
+    }
+
+    std::string GetDay(){
+        return this->p2.GetDay();
+    }
+
+    void SetDay(const std::string& day){
+        this->p2.SetDay(day);
+    }
+
+    friend std::istream& operator >> (std::istream&, CustumerType2&);
+    void Show();
+    // void Update();
+    virtual void ReadFile(std::ifstream&);
+    virtual void WriteFile(const std::string&);
+
+    void Input(const std::string&);
+};
+
+#endif
+
+#include "CustumerType2.h"
+#include <string>
+#include <cstdlib>
+
+int CustumerType2::Count2 = 0;
+std::string CustumerType2::NameCustumerType2 = "Khach hang tap hang thang";
+
+std::istream& operator >> (std::istream& in, CustumerType2& ct2){
+    CustumerType2::Count2++;
+    ct2.CustumerNumber = "N" + std::string(3-std::to_string(CustumerType2::Count2).length(),'0') + std::to_string(CustumerType2::Count2);
+
+    std::cout << "Nhap ten khach hang: ";
+    getline(in, ct2.FullName);
+
+    std::cout << "Nhap nam sinh: ";
+    in >> ct2.BornYear;
+
+    ct2.Gender = ct2.ChooseGender();
+    
+    std::cout << "Nhap so dien thoai: ";
+    in >> ct2.PhoneNumber;
+    // std::cout << "Nam bay gio la 2023" << std::endl;
+    
+    std::string day;
+    std::cout << "Nhap ngay tap: ";
+    in >> day;
+    ct2.p2.SetDay(day);
+
+    std::string month;
+    std::cout << "Nhap thang bat dau tap: ";
+    in >> month;
+    ct2.p2.SetMonth(month);
+
+    // operator>>(in, static_cast<CustumerType1&>(ct2));
+    std::cout << "Nhap so thang tap: ";
+    int n; in >> n;
+    ct2.p2.SetNumberOfMonth(n);
+    return in;
+}
+
+void CustumerType2::Show(){
+    std::cout << "----------------------------------------------" << std::endl;
+    std::cout << "|" << std::setw(17) << "Ma khach hang : " << this->CustumerNumber << std::setw(24) << "|" << std::endl;
+    Human::Show();
+    std::cout << "|" << std::setw(17) << "Ngay bat dau : " << ((p2.GetDay().length()==1) ? ("0"+p2.GetDay()) : p2.GetDay())
+              << "/" << ((p2.GetMonth().length()==1) ? ("0"+p2.GetMonth()) : p2.GetMonth()) << "/" << p2.Year
+              << std::setw(18) << "|" << std::endl;
+
+    int number = p2.GetNumberOfMonth();
+    std::string s = std::to_string(number);
+
+    std::cout << "|" << std::setw(17) << "Thoi han : " << ((s.length()==1) ? ("0"+s) : s) << " thang" 
+              << std::setw(20) << "|" << std::endl;
+
+    // int temp =  (p2.GetNumberOfMonth())*std::stoi(p2.PriceEachMonth);
+    // std::cout << "|" << std::setw(17) << "Don gia : " << temp << " 000VND"
+    //           << std::setw(21 - std::to_string(temp).length()) << "|" << std::endl;
+
+    std::cout << "----------------------------------------------" << std::endl;
+}
+
+// void CustumerType2::Update(){
+
+// }
+
+void CustumerType2::ReadFile(std::ifstream& ifs){
+    // // Kiểm tra xem file có trống hay không
+    // if (ifs.peek() == std::ifstream::traits_type::eof()) {
+    //     std::cout << "File đang trống." << std::endl;
+    //     return; // Kết thúc hàm nếu file trống
+    // }
+    ++CustumerType2::Count2;
+    getline(ifs,this->CustumerNumber,',');
+
+    getline(ifs, this->FullName,',');
+
+    getline(ifs,BornYear,',');
+    ifs.ignore(1, ',');
+    
+    getline(ifs,this->Gender,',');
+    ifs.ignore(1, ',');
+
+    getline(ifs,this->PhoneNumber,',');
+    ifs.ignore(1, ',');
+
+    std::string day, month,year;
+    int number;
+
+    getline(ifs,day,',');    
+    p2.SetDay(day);
+    ifs.ignore(1, ',');
+
+    getline(ifs,month,',');
+    p2.SetMonth(month);
+    ifs.ignore(1, ',');
+
+    ifs >> number;
+    p2.SetNumberOfMonth(number);
+
+    ifs.ignore(1, '\n');
+}
+
+void CustumerType2::WriteFile(const std::string& filename){
+    std::ofstream ofs(filename,std::ios::app);
+    if(!ofs) {
+        std::cerr<<"Can't open output file.\n";
+        return;
+    }
+    if(Count2 != 0){
+        Count2 = 0;
+    }
+    else{
+        ofs << std::endl;
+    }
+    ofs << this->GetCustumerNumer() << "," <<  FullName << "," << BornYear << ", " << Gender << ", " << PhoneNumber << ", "
+        << p2.GetDay() << ", " << p2.GetMonth() << ", " << p2.GetNumberOfMonth();
+
+    ofs.close();
+}
+
+void CustumerType2::Input(const std::string& s){
+    ++CustumerType2::Count2;
+    this->CustumerNumber = "N" + std::string(3-std::to_string(CustumerType2::Count2).length(),'0') + std::to_string(CustumerType2::Count2);
+    Human::Input(s);
+    std::string day;
+    std::cout << "Nam hien tai la 2023" << std::endl;
+    std::cout << "Nhap ngay tap: ";
+    std::cin >> day;
+    // check.validateNumeric(day);
+    this->p2.SetDay(day);
+
+    std::string month;
+    std::cout << "Nhap thang bat dau tap: ";
+    std::cin >> month;
+    // check.validateNumeric(month);
+    this->p2.SetMonth(month);
+    int n;
+    std::cout << "Nhap so thang tap: ";
+    std::cin >> n;
+    this->p2.SetNumberOfMonth(n);  
+}
+
+#ifndef CUSTUMERTYPE3_H
+#define CUSTUMERTYPE3_H
+
+#include "CustumerType2.h"
+#include "Package3.h"
+
+class CustumerType3 : public CustumerType2
+{
+private:
+    std::string CustumerNumber;
+    std::string Service;
+    Package3 p3;
+public:
+    static std::string NameCustumerType3;
+    static int Count3;
+
+    std::string GetCustumerNumer(){
+        return this->CustumerNumber;
+    }
+
+    void SetCustumerNumber(std::string& custumernumber){
+        this->CustumerNumber = custumernumber;
+    }
+
+    std::string GetDay(){
+        return this->p3.GetDay();
+    }
+
+    void SetDay(const std::string& day){
+        this->p3.SetDay(day);
+    }
+
+    std::string ChooseService(){
+        return this->Service;
+    }
+
+    void Show();
+    friend std::istream& operator >> (std::istream&, CustumerType3&);
+    CustumerType3& operator=(const CustumerType2& custumer2);
+
+    void Upgrade(CustumerType2&);
+    // void Update();
+    void ReadFile(std::ifstream&);
+    void WriteFile(const std::string&);
+
+    void Input(const std::string&);
+};
+
+#endif
+
+
+// #include <windows.h>
+#include "CustumerType3.h"
+
+std::string CustumerType3::NameCustumerType3 = "Khach hang loai VIP";
+int CustumerType3::Count3 = 0;
+
+void CustumerType3::Show(){
+    std::cout << "----------------------------------------------" << std::endl;
+    std::cout << "|" << std::setw(17) << "Ma khach hang : " << this->CustumerNumber << std::setw(22) << "|" << std::endl;
+    std::cout << "|" << std::setw(17) << "Xep loai : "<< this->NameCustumerType3 
+                     << std::setw(28-this->NameCustumerType3.length()) << "|" << std::endl;
+    Human::Show();
+    std::cout << "|" << std::setw(17) << "Ngay bat dau : " << ((p3.GetDay().length()==1) ? ("0"+p3.GetDay()) : p3.GetDay())
+              << "/" << ((p3.GetMonth().length()==1) ? ("0"+p3.GetMonth()) : p3.GetMonth()) << "/" << p3.Year
+              << std::setw(18) << "|" << std::endl;
+
+    int number = p3.GetNumberOfMonth();
+    std::string s = std::to_string(number);
+
+    std::cout << "|" << std::setw(17) << "Thoi han : " << ((s.length()==1) ? ("0"+s) : s) << " thang" 
+              << std::setw(20) << "|" << std::endl;
+    std::cout << "|" << std::setw(17) << "Uu dai di kem : " << this->Service << std::setw(28 - this->Service.length()) << "|" << std::endl; 
+    std::cout << "----------------------------------------------" << std::endl;
+}
+
+std::istream& operator >> (std::istream& in, CustumerType3& ct3){
+    ++CustumerType3::Count3;
+    ct3.CustumerNumber = "VIP" + std::string(3-std::to_string(CustumerType3::Count3).length(),'0') + std::to_string(CustumerType3::Count3);
+
+    std::cout << "Nhap ten khach hang: ";
+    getline(in, ct3.FullName);
+
+    std::cout << "Nhap nam sinh: ";
+    in >> ct3.BornYear;
+    
+
+    ct3.Gender = ct3.ChooseGender();
+    
+    std::cout << "Nhap so dien thoai: ";
+    in >> ct3.PhoneNumber;
+    std::cout << "Nam bay gio la 2023" << std::endl;
+    
+    std::string day;
+    std::cout << "Nhap ngay tap: ";
+    in >> day;
+    ct3.p3.SetDay(day);
+
+    std::string month;
+    std::cout << "Nhap thang bat dau tap: ";
+    in >> month;
+    ct3.p3.SetMonth(month);
+
+    // std::string year;
+    // std::cout << "Nhap thang bat dau tap: ";
+    // in >> year;
+    // ct3.p3.SetYear(year);
+
+    // operator>>(in, static_cast<CustumerType1&>(ct2));
+    std::cout << "Nhap so thang tap: ";
+    int n; in >> n;
+    ct3.p3.SetNumberOfMonth(n);
+
+    // chon dich vu di kem
+    system("cls");
+    ct3.p3.ReadFile("service.txt");
+    ct3.Service=ct3.p3.GetService();
+
+    return in;
+}
+
+CustumerType3& CustumerType3::operator=(const CustumerType2& custumer2)
+{
+    // Gán các thông tin từ CustumerType2 vào CustumerType3
+    static_cast<CustumerType2&>(*this) = custumer2;
+    return *this;
+}
+
+void CustumerType3::Upgrade(CustumerType2& ct2){
+    ++Count3;
+    this->CustumerNumber = "VIP" + std::string(3-std::to_string(CustumerType3::Count3).length(),'0') + std::to_string(CustumerType3::Count3);
+    this->FullName = ct2.GetName();
+    this->BornYear = ct2.GetYear();
+    this->Gender = ct2.GetGender();
+    this->PhoneNumber = ct2.GetPhoneNumber();
+
+    std::string day, month,year;
+    std::cout << "Nhap thoi gian bat dau goi tap VIP " << std::endl;
+
+    std::cout << "Nhap ngay bat dau " << std::endl;
+    std::cin >> day;
+    this->p3.SetDay(day);
+
+    std::cout << "Nhap thang bat dau " << std::endl;
+    std::cin >> month;
+    this->p3.SetMonth(month);
+
+    // std::cout << "Nhap nam bat dau " << std::endl;
+    // std::cin >> year;
+    // this->p3.SetYear(year);
+
+    std::cout << "Nhap so thang bat dau " << std::endl;
+    int n;
+    std::cin >> n;
+    this->p3.SetNumberOfMonth(n);
+    this->Service = this->p3.GetService();
+    return ;
+}
+
+void CustumerType3::ReadFile(std::ifstream& ifs){
+    // // Kiểm tra xem file có trống hay không
+    // if (ifs.peek() == std::ifstream::traits_type::eof()) {
+    //     std::cout << "File đang trống." << std::endl;
+    //     return; // Kết thúc hàm nếu file trống
+    // }
+
+    ++CustumerType3::Count3;
+    getline(ifs,this->CustumerNumber,',');
+    
+    getline(ifs, this->FullName,',');
+
+    getline(ifs,BornYear,',');
+    ifs.ignore(1, ',');
+    
+    getline(ifs,this->Gender,',');
+    ifs.ignore(1, ',');
+
+    getline(ifs,this->PhoneNumber,',');
+    ifs.ignore(1, ',');
+
+    // CustumerType1::ReadFile(ifs);
+
+    std::string day, month,year;
+    int number;
+
+    getline(ifs,day,',');    
+    p3.SetDay(day);
+    ifs.ignore(1, ',');
+
+    getline(ifs,month,',');
+    p3.SetMonth(month);
+    ifs.ignore(1, ',');
+
+    // getline(ifs,year,',');
+    // p3.SetYear(year);
+    // ifs.ignore(1, ',');
+
+    ifs >> number;
+    p3.SetNumberOfMonth(number);
+    ifs.ignore(1,',');
+    
+    getline(ifs, this->Service,'\n');
+
+
+    // ifs.ignore(1, '\n');
+}
+
+void CustumerType3::WriteFile(const std::string& filename){
+    std::ofstream ofs(filename,std::ios::app);
+    if(!ofs) {
+        std::cerr<<"Can't open output file.\n";
+        return;
+    }
+    if(Count3 != 0){
+        Count3 = 0;
+    }
+    else{
+        ofs << std::endl;
+    }
+    ofs << this->GetCustumerNumer() << "," <<FullName << "," << BornYear << ", "  << Gender << ", " << PhoneNumber << ", "
+        << p3.GetDay() << ", " << p3.GetMonth() << ", " << p3.GetNumberOfMonth() 
+        << "," << this->ChooseService();
+
+    ofs.close();
+}
+
+void CustumerType3::Input(const std::string& s){
+    ++CustumerType3::Count3;
+    this->CustumerNumber = "VIP" + std::string(3-std::to_string(CustumerType3::Count3).length(),'0') + std::to_string(CustumerType3::Count3);
+    Human::Input(s);
+    std::string day;
+
+    std::cout << "Nam hien tai la 2023" << std::endl;
+    std::cout << "Nhap ngay tap: ";
+    std::cin >> day;
+    // check.validateNumeric(day);
+    this->p3.SetDay(day);
+
+    std::string month;
+    std::cout << "Nhap thang bat dau tap: ";
+    std::cin >> month;
+    // check.validateNumeric(month);
+    this->p3.SetMonth(month);
+    int n;
+    std::cout << "Nhap so thang tap: ";
+    std::cin >> n;
+    this->p3.SetNumberOfMonth(n); 
+
+    this->Service = this->p3.GetService();
+}

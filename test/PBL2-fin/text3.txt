@@ -1,0 +1,2 @@
+VIP001,Van Ba Pham Tan,1990, Nam , 1234567890, 01, 01, 10,Ho boi vo cuc
+VIP002,Ho Quy Ly,1990, Nu  , 0123456789, 25, 08, 6,Do uong tu chon
